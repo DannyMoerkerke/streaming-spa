@@ -37,6 +37,14 @@ const setActiveLink = url => {
 };
 
 const renderRoute = async url => {
+  if(!('streamAppendHTMLUnsafe' in HTMLElement.prototype)) {
+    document.querySelector('.page').innerHTML = `
+      <p>Your browser does not support out-of-order streaming HTML.</p>
+      <p>Open this app in a Chromium-based browser version 148+ with experimental web features enabled</p>
+  `;
+
+    return;
+  }
   const route = getRoute(url);
   const response = await fetch(new URL(route.page, baseUrl));
 

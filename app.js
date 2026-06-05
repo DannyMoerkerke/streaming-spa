@@ -6,7 +6,6 @@ const routes = new Map([
 ]);
 
 const baseUrl = new URL('.', document.currentScript.src);
-const app = document.querySelector('#app');
 const navLinks = [...document.querySelectorAll('nav a')];
 
 const getRoutePath = url => {
@@ -40,15 +39,12 @@ const setActiveLink = url => {
 const renderRoute = async url => {
   const route = getRoute(url);
   const response = await fetch(new URL(route.page, baseUrl));
-console.log(url.pathname);
-  if (!response.ok) {
-    throw new Error(`Could not load ${route.page}`);
-  }
 
   const html = await response.text();
   const writer = document.body.streamAppendHTMLUnsafe().getWriter();
   await writer.write(html);
 
+  // write the list chunks
   if(url.pathname.endsWith('/list')) {
     await writeListChunks(writer)
   }
@@ -58,8 +54,6 @@ console.log(url.pathname);
   document.title = route.title;
   setActiveLink(url);
 };
-
-
 
 const writeListChunks = async (writer) => {
   return new Promise((resolve) => {

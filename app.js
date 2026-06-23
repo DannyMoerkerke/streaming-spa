@@ -90,9 +90,31 @@ const writeListChunks = async (writer) => {
           <li>Item 4</li>
           <?marker name="items">
         </template>`);
+    }, 8000);
+
+    setTimeout(async() => {
+      await writer.write(`
+        <template for="items">
+          <li>Item 5</li>
+          <li>Item 6</li>
+          <li>Item 7</li>
+          <?marker name="items">
+        </template>`);
+    }, 9000);
+
+    setTimeout(async() => {
+      await writer.write(`
+        <template for="items">
+          <li>Item 8</li>
+          <?marker name="items">
+        </template>
+        <template for="status">
+          <strong>Complete!</strong>
+        </template>`
+      );
 
       resolve();
-    }, 8000);
+    }, 10500);
   })
 };
 

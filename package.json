@@ -1,5 +1,11 @@
 {
+  "type": "module",
   "scripts": {
     "start": "node server.js"
+  },
+  "dependencies": {
+    "@lit-labs/ssr": "^4.1.0",
+    "express": "^5.2.1",
+    "lit": "^3.3.3"
   }
 }

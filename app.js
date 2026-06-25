@@ -2,8 +2,10 @@ const routes = new Map([
   ['/', { title: 'Home | Streaming SPA', page: 'pages/home.html' }],
   ['/about', { title: 'About | Streaming SPA', page: 'pages/about.html' }],
   ['/info', { title: 'Info | Streaming SPA', page: 'pages/info.html' }],
-  ['/list', { title: 'Info | Streaming SPA', page: 'pages/list.html' }],
+  ['/client-list', { title: 'Client List | Streaming SPA', page: 'pages/client-list.html' }],
 ]);
+
+const serverRenderedRoutes = new Set(['/server-list', '/table']);
 
 const baseUrl = new URL('.', document.currentScript.src);
 const navLinks = [...document.querySelectorAll('nav a')];
@@ -37,6 +39,12 @@ const setActiveLink = url => {
 };
 
 const renderRoute = async url => {
+  const routePath = getRoutePath(url);
+
+  if (serverRenderedRoutes.has(routePath)) {
+    return;
+  }
+
   if(!('streamAppendHTMLUnsafe' in HTMLElement.prototype)) {
     document.querySelector('.page').innerHTML = `
       <p>Your browser does not support out-of-order streaming HTML.</p>
@@ -52,9 +60,8 @@ const renderRoute = async url => {
   const writer = document.body.streamAppendHTMLUnsafe().getWriter();
   await writer.write(html);
 
-  // write the list chunks
-  if(url.pathname.endsWith('/list')) {
-    await writeListChunks(writer)
+  if (routePath === '/client-list') {
+    await writeListChunks(writer);
   }
 
   await writer.close();
@@ -120,8 +127,9 @@ const writeListChunks = async (writer) => {
 
 navigation.addEventListener('navigate', event => {
   const url = new URL(event.destination.url);
+  const routePath = getRoutePath(url);
 
-  if (url.origin !== location.origin || !routes.has(getRoutePath(url))) {
+  if (url.origin !== location.origin || serverRenderedRoutes.has(routePath) || !routes.has(routePath)) {
     return;
   }
 

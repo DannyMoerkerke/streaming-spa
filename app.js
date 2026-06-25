@@ -5,7 +5,7 @@ const routes = new Map([
   ['/client-list', { title: 'Client List | Streaming SPA', page: 'pages/client-list.html' }],
 ]);
 
-const serverRenderedRoutes = new Set(['/server-list', '/table']);
+const serverRenderedRoutes = new Set(['/server-list']);
 
 const baseUrl = new URL('.', document.currentScript.src);
 const navLinks = [...document.querySelectorAll('nav a')];

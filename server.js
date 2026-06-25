@@ -101,7 +101,7 @@ app.get('/server-list', async (req, res) => {
 <?start name="content">
   <p class="eyebrow">Server List</p>
   <h1 id="info-title">A continuously updated list.</h1>
-  <p>This list is streamed in chunks.</p>
+  <p>This list is streamed in chunks on the server-side.</p>
   <div>
     <?start name="status">
     Loading…

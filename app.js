@@ -54,6 +54,7 @@ const renderRoute = async url => {
     return;
   }
   const route = getRoute(url);
+  setActiveLink(url);
   const response = await fetch(new URL(route.page, baseUrl));
 
   const html = await response.text();
@@ -67,7 +68,6 @@ const renderRoute = async url => {
   await writer.close();
 
   document.title = route.title;
-  setActiveLink(url);
 };
 
 const writeListChunks = async (writer) => {

@@ -1,8 +1,12 @@
- {
-    "rewrites": [
-      {
-        "source": "/(.*)",
-        "destination": "/index.html"
-      }
-    ]
-  }
+{
+  "rewrites": [
+    {
+      "source": "/server-list",
+      "destination": "/api/server-list"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

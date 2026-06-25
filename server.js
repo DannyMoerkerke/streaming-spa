@@ -4,64 +4,10 @@ import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-const app = express();
-const port = 8888;
+const isMainModule = process.argv[1] && path.resolve(process.argv[1]) === __filename;
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-app.use(express.static(__dirname));
-
-const writeListChunks = async res => {
-  await sleep(2000);
-  res.write(`
-        <template for="list">
-          <ul>
-            <li>Item 1</li>
-            <?marker name="items">
-          </ul>
-        </template>`);
-
-  await sleep(3000);
-  res.write(`
-        <template for="items">
-          <li>Item 2</li>
-          <li>Item 3</li>
-          <?marker name="items">
-        </template>`);
-
-  await sleep(3000);
-  res.write(`
-        <template for="items">
-          <li>Item 4</li>
-          <?marker name="items">
-        </template>`);
-
-  await sleep(1000);
-  res.write(`
-        <template for="items">
-          <li>Item 5</li>
-          <li>Item 6</li>
-          <li>Item 7</li>
-          <?marker name="items">
-        </template>`);
-
-  await sleep(1500);
-  res.write(`
-        <template for="items">
-          <li>Item 8</li>
-          <?marker name="items">
-        </template>
-        <template for="status">
-          <strong>Complete!</strong>
-        </template>`);
-};
-
-app.get('/server-list', async (req, res) => {
-  res.status(200);
-  res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  res.setHeader('Transfer-Encoding', 'chunked');
-  res.flushHeaders();
-
+export const writeServerListShell = res => {
   res.write(`<!DOCTYPE html>
 <html lang="en">
   <head>
@@ -111,15 +57,79 @@ app.get('/server-list', async (req, res) => {
 <?end>
 </template>
 `);
+};
 
-  await writeListChunks(res);
-  res.end();
-});
+export const writeServerListChunks = async res => {
+  await sleep(2000);
+  res.write(`
+        <template for="list">
+          <ul>
+            <li>Item 1</li>
+            <?marker name="items">
+          </ul>
+        </template>`);
 
-app.use((req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
+  await sleep(3000);
+  res.write(`
+        <template for="items">
+          <li>Item 2</li>
+          <li>Item 3</li>
+          <?marker name="items">
+        </template>`);
 
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
-});
+  await sleep(3000);
+  res.write(`
+        <template for="items">
+          <li>Item 4</li>
+          <?marker name="items">
+        </template>`);
+
+  await sleep(1000);
+  res.write(`
+        <template for="items">
+          <li>Item 5</li>
+          <li>Item 6</li>
+          <li>Item 7</li>
+          <?marker name="items">
+        </template>`);
+
+  await sleep(1500);
+  res.write(`
+        <template for="items">
+          <li>Item 8</li>
+          <?marker name="items">
+        </template>
+        <template for="status">
+          <strong>Complete!</strong>
+        </template>`);
+};
+
+export const writeServerListResponse = async res => {
+  writeServerListShell(res);
+  await writeServerListChunks(res);
+};
+
+if (isMainModule) {
+  const app = express();
+  const port = 8888;
+
+  app.use(express.static(__dirname));
+
+  app.get('/server-list', async (req, res) => {
+    res.status(200);
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Transfer-Encoding', 'chunked');
+    res.flushHeaders();
+
+    await writeServerListResponse(res);
+    res.end();
+  });
+
+  app.use((req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+  });
+
+  app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`);
+  });
+}
